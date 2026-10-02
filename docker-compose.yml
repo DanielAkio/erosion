@@ -1,0 +1,26 @@
+# Sobe toda a infraestrutura do Erosion com um unico comando:
+#   docker compose up --build
+#
+# Depois abra DOIS navegadores em http://localhost:8080 — cada aba/navegador
+# e um jogador. Crie a sala em um e entre com o codigo no outro.
+services:
+  erosion:
+    build: ./server
+    container_name: erosion
+    ports:
+      # Porta do host configuravel (padrao 8080). Se a 8080 ja estiver em uso
+      # na sua maquina, rode:  HOST_PORT=9090 docker compose up --build
+      - "${HOST_PORT:-8080}:8080"
+    environment:
+      - PORT=8080
+    restart: unless-stopped
+
+# Define uma sub-rede explicita para a rede do projeto. Em hosts com muitas
+# redes Docker ja alocadas, deixar o daemon escolher automaticamente pode
+# falhar com "all predefined address pools have been fully subnetted".
+# Se a sub-rede abaixo colidir com outra na sua maquina, troque o 10.123.0.0/24.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.123.45.0/24

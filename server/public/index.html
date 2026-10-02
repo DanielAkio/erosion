@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Erosion — Blefe, Sorte e Cálculo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Tela de entrada -->
+    <section id="lobby-screen" class="screen active">
+      <div class="brand">
+        <h1>EROSION</h1>
+        <p class="tagline">Blefe · Sorte · Cálculo</p>
+      </div>
+      <div class="panel">
+        <label>Seu nome
+          <input id="name-input" type="text" maxlength="16" placeholder="Jogador" />
+        </label>
+        <label>Vidas iniciais
+          <input id="lives-input" type="number" min="5" max="100" step="1" value="20" />
+        </label>
+        <button id="create-btn" class="primary">Criar sala</button>
+        <div class="divider"><span>ou</span></div>
+        <label>Código da sala
+          <input id="code-input" type="text" maxlength="4" placeholder="ABCD" style="text-transform:uppercase" />
+        </label>
+        <button id="join-btn">Entrar na sala</button>
+        <div class="divider"><span>primeira vez?</span></div>
+        <button id="tutorial-btn" class="ghost">📖 Como jogar</button>
+      </div>
+      <div id="lobby-error" class="error"></div>
+    </section>
+
+    <!-- Sala de espera -->
+    <section id="waiting-screen" class="screen">
+      <h2>Sala <span id="room-code" class="code"></span></h2>
+      <p class="hint">Abra outro navegador, entre com este código e inicie a partida.</p>
+      <div id="lives-config" class="lives-config">
+        <label>Vidas iniciais
+          <input id="lives-config-input" type="number" min="5" max="100" step="1" value="20" />
+        </label>
+        <p id="lives-config-note" class="hint lives-note">Somente o dono da sala pode alterar.</p>
+      </div>
+      <ul id="player-list" class="player-list"></ul>
+      <button id="start-btn" class="primary">Iniciar partida</button>
+      <div id="waiting-error" class="error"></div>
+    </section>
+
+    <!-- Tutorial interativo -->
+    <section id="tutorial-screen" class="screen">
+      <div class="tut-wrap">
+        <header class="tut-header">
+          <h2>Como jogar <span class="tut-brand">EROSION</span></h2>
+          <button id="tut-close" class="ghost tut-close">✕ Fechar</button>
+        </header>
+
+        <div class="tut-progress">
+          <div id="tut-progress-bar" class="tut-progress-bar"></div>
+        </div>
+        <div id="tut-dots" class="tut-dots"></div>
+
+        <div id="tut-stage" class="tut-stage"><!-- passos injetados via JS --></div>
+
+        <footer class="tut-footer">
+          <button id="tut-prev" class="ghost">← Voltar</button>
+          <span id="tut-counter" class="tut-counter"></span>
+          <button id="tut-next" class="primary">Avançar →</button>
+        </footer>
+      </div>
+    </section>
+
+    <!-- Mesa de jogo -->
+    <section id="game-screen" class="screen">
+      <header class="game-header">
+        <div class="room-badge">Sala <span id="g-room-code"></span></div>
+        <div class="phase-badge" id="phase-badge">—</div>
+        <div class="vortex">
+          <span class="vortex-label">VÓRTICE</span>
+          <span class="vortex-amount" id="vortex-amount">0</span>
+        </div>
+      </header>
+
+      <div id="opponents" class="opponents"></div>
+
+      <div class="table">
+        <h3>Mesa (comunitárias)</h3>
+        <div id="community" class="tokens-row"></div>
+        <p class="message" id="game-message"></p>
+      </div>
+
+      <div class="you-area">
+        <div class="you-header">
+          <span id="you-name" class="you-name"></span>
+          <span class="lives">❤️ <span id="you-lives">0</span> Vidas</span>
+          <span class="committed">Apostado: <span id="you-committed">0</span></span>
+        </div>
+        <div id="your-hand" class="tokens-row hand"></div>
+        <div id="swap-controls" class="swap-controls">
+          <span class="swap-hint" id="swap-hint"></span>
+          <button id="swap-btn">Trocar selecionadas</button>
+        </div>
+      </div>
+
+      <div class="actions" id="actions">
+        <button data-action="check" class="act">Check</button>
+        <button data-action="call" class="act primary">Pagar p/ ver</button>
+        <div class="raise-group">
+          <input id="raise-amount" type="number" min="1" value="1" />
+          <button data-action="raise" class="act">Aumentar</button>
+        </div>
+        <button data-action="allin" class="act warn">All-In</button>
+        <button data-action="fold" class="act danger">Correr</button>
+      </div>
+
+      <!-- Showdown overlay -->
+      <div id="showdown" class="showdown hidden">
+        <div class="showdown-card">
+          <h2 id="showdown-title">Showdown</h2>
+          <div id="showdown-results"></div>
+          <button id="next-round-btn" class="primary">Próxima rodada</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal de fim de jogo: estatisticas completas -->
+    <div id="gameover-modal" class="go-modal hidden">
+      <div class="go-modal-card">
+        <div class="go-stage" id="go-stage"></div>
+
+        <div class="go-panels">
+          <div class="go-panel">
+            <h3 class="go-panel-title">🏆 Classificação</h3>
+            <div id="go-ranking" class="go-ranking"></div>
+          </div>
+
+          <div class="go-panel">
+            <h3 class="go-panel-title">⭐ Destaques</h3>
+            <div id="go-highlights" class="go-highlights"></div>
+
+            <h3 class="go-panel-title">📊 Suas estatísticas</h3>
+            <div id="go-mystats" class="go-mystats"></div>
+          </div>
+        </div>
+
+        <div class="go-actions">
+          <button id="go-newgame-btn" class="primary">Nova partida</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

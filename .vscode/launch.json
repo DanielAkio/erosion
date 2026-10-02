@@ -1,0 +1,59 @@
+{
+  // Configuracoes de execucao do jogo Erosion.
+  // Veja: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Modo desenvolvimento: roda direto do TypeScript com reload (tsx watch).
+      // Nao precisa compilar antes. Ideal para desenvolver.
+      "name": "Erosion: Dev (tsx watch)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "env": {
+        "PORT": "8080"
+      },
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      // Modo producao local: compila (preLaunchTask) e roda o JS gerado em dist/.
+      "name": "Erosion: Build + Start (dist)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/server",
+      "program": "${workspaceFolder}/server/dist/index.js",
+      "preLaunchTask": "erosion: build",
+      "env": {
+        "PORT": "8080"
+      },
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"]
+    },
+    {
+      // Modo Docker: sobe o container via Compose, anexa o debugger ao Node
+      // dentro dele e, ao clicar em STOP, derruba o container automaticamente.
+      //
+      // Fluxo:
+      //   preLaunchTask  -> "erosion: compose up (debug)"  (docker compose up -d)
+      //   attach         -> conecta na porta 9229 do container
+      //   postDebugTask  -> "erosion: compose down"        (executa no STOP)
+      "name": "Erosion: Docker Compose (stop derruba o container)",
+      "type": "node",
+      "request": "attach",
+      "restart": true,
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/server",
+      "remoteRoot": "/app",
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
+      "preLaunchTask": "erosion: compose up (debug)",
+      "postDebugTask": "erosion: compose down"
+    }
+  ],
+  "compounds": []
+}

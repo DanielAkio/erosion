@@ -1,0 +1,16 @@
+# Override usado APENAS no fluxo de debug do VS Code.
+# Aplicado junto do docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build -d
+#
+# Ele faz o Node iniciar com o inspector aberto (--inspect) e expoe a porta
+# 9229 para que o VS Code consiga anexar o debugger ao processo dentro do
+# container. Nao afeta o compose de producao (docker-compose.yml), que continua
+# rodando `node dist/index.js` normalmente.
+services:
+  erosion:
+    # Mapeia o modulo de debug: --inspect em 0.0.0.0 para aceitar conexoes
+    # externas ao container.
+    command: ["node", "--inspect=0.0.0.0:9229", "dist/index.js"]
+    ports:
+      - "${HOST_PORT:-8080}:8080"
+      - "9229:9229"

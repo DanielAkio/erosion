@@ -1,0 +1,81 @@
+{
+  // Tasks de build e infraestrutura do jogo Erosion.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Compila o TypeScript do servidor para dist/.
+      // Usada automaticamente pela config de launch "Build + Start (dist)".
+      "label": "erosion: build",
+      "type": "shell",
+      "command": "npm run build",
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      // Instala as dependencias do servidor (npm install).
+      "label": "erosion: install deps",
+      "type": "shell",
+      "command": "npm install",
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      },
+      "problemMatcher": []
+    },
+    {
+      // Sobe toda a infraestrutura via Docker Compose (requisito do projeto).
+      // Abra dois navegadores em http://localhost:8080 (um por jogador).
+      // Se a porta 8080 estiver ocupada, use: HOST_PORT=9090 docker compose up --build
+      "label": "erosion: compose up",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      // Sobe a infraestrutura em segundo plano (detached) para o fluxo de debug.
+      // Usa o override docker-compose.debug.yml para abrir o inspector do Node
+      // (porta 9229). O VS Code considera a task "pronta" assim que o padrao de
+      // endsPattern casar na saida dos logs do compose.
+      "label": "erosion: compose up (debug)",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build -d && docker compose logs -f",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "erosion-compose",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "file": 1,
+          "location": 1,
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*(Building|Creating|Starting|Pulling).*",
+          "endsPattern": ".*(rodando em|Debugger listening|Attaching to|Started|Running on).*"
+        }
+      }
+    },
+    {
+      // Derruba a infraestrutura do Docker Compose.
+      "label": "erosion: compose down",
+      "type": "shell",
+      "command": "docker compose down",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
