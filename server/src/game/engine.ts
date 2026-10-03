@@ -364,7 +364,7 @@ export class GameEngine {
   }
 
   private advanceTurn(): void {
-    // Se só resta 1 jogador que não desistiu -> ele leva o vortice (sem showdown).
+    // Se só resta 1 jogador que não desistiu, ele recupera sua contribuição.
     const notFolded = this.state.players.filter((p) => !p.folded && (p.hand.length > 0 || p.committed > 0));
     if (notFolded.length <= 1) {
       this.finishByFold(notFolded[0]);
@@ -494,14 +494,15 @@ export class GameEngine {
 
   private finishByFold(winner?: PlayerState): void {
     if (winner) {
-      winner.lives += this.state.vortex;
+      const gained = winner.committed;
+      winner.lives += gained;
       winner.stats.roundsWon++;
-      winner.stats.livesWon += this.state.vortex;
-      this.state.message = `${winner.name} levou o Vórtice (todos correram).`;
+      winner.stats.livesWon += gained;
+      this.state.message = `${winner.name} recuperou suas vidas apostadas (todos correram).`;
       this.state.showdown = {
         scores: [],
         winners: [winner.id],
-        potWon: this.state.vortex,
+        potWon: gained,
       };
     }
     this.state.vortex = 0;
@@ -526,18 +527,17 @@ export class GameEngine {
     for (const s of scores) maxScore = Math.max(maxScore, s.result.score);
     const winners = scores.filter((s) => s.result.score === maxScore).map((s) => s.playerId);
 
-    const share = Math.floor(this.state.vortex / winners.length);
-    let remainder = this.state.vortex - share * winners.length;
+    let totalWon = 0;
     for (const wId of winners) {
       const w = this.getPlayer(wId)!;
-      const gained = share + (remainder > 0 ? 1 : 0);
+      const gained = w.committed;
       w.lives += gained;
       w.stats.roundsWon++;
       w.stats.livesWon += gained;
-      if (remainder > 0) remainder--;
+      totalWon += gained;
     }
 
-    this.state.showdown = { scores, winners, potWon: this.state.vortex };
+    this.state.showdown = { scores, winners, potWon: totalWon };
     this.state.vortex = 0;
     this.state.phase = "showdown";
 

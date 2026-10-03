@@ -30,7 +30,7 @@
     {
       // Sobe toda a infraestrutura via Docker Compose (requisito do projeto).
       // Abra dois navegadores em http://localhost:8080 (um por jogador).
-      // Se a porta 8080 estiver ocupada, use: HOST_PORT=9090 docker compose up --build
+      // Se a porta 8080 estiver ocupada, defina $env:HOST_PORT=9090 no PowerShell.
       "label": "erosion: compose up",
       "type": "shell",
       "command": "docker compose up --build",
@@ -41,13 +41,13 @@
       "problemMatcher": []
     },
     {
-      // Sobe a infraestrutura em segundo plano (detached) para o fluxo de debug.
+      // Sobe a infraestrutura para o fluxo de debug e acompanha os logs.
       // Usa o override docker-compose.debug.yml para abrir o inspector do Node
-      // (porta 9229). O VS Code considera a task "pronta" assim que o padrao de
-      // endsPattern casar na saida dos logs do compose.
+      // (porta 9229). Sem encadear comandos com &&, funciona no PowerShell 5.1.
+      // O VS Code considera a task "pronta" quando o servidor iniciar.
       "label": "erosion: compose up (debug)",
       "type": "shell",
-      "command": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build -d && docker compose logs -f",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build",
       "options": {
         "cwd": "${workspaceFolder}"
       },

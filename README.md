@@ -74,19 +74,23 @@ Depois abra **dois navegadores** (ou duas janelas anônimas) em:
 
 - **http://localhost:8080**
 
-Crie uma sala em um navegador, copie o **código** e entre com o segundo navegador.
+Crie uma sala em um navegador, copie o **código** e entre com o segundo navegador. Esse comando funciona no Linux, macOS e Windows com Docker Desktop e Docker Compose v2 instalados.
 
-> Se a porta 8080 estiver ocupada: `HOST_PORT=9090 docker compose up --build`
+> Se a porta 8080 estiver ocupada, no PowerShell use `$env:HOST_PORT=9090` e depois `docker compose up --build`. No Prompt de Comando, use `set HOST_PORT=9090` e depois `docker compose up --build`. No Linux/macOS, use `HOST_PORT=9090 docker compose up --build`.
 
 ---
 
 ## 🛠️ Desenvolvimento local (sem Docker)
+
+Instale o Node.js 20 ou superior (que inclui o npm) e então execute:
 
 ```bash
 cd server
 npm install
 npm run dev
 ```
+
+No PowerShell, entre na pasta com `Set-Location server` antes de executar os comandos npm.
 
 Para build de produção:
 

@@ -1,6 +1,6 @@
 # Override usado APENAS no fluxo de debug do VS Code.
 # Aplicado junto do docker-compose.yml:
-#   docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build -d
+#   docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build
 #
 # Ele faz o Node iniciar com o inspector aberto (--inspect) e expoe a porta
 # 9229 para que o VS Code consiga anexar o debugger ao processo dentro do
