@@ -302,7 +302,7 @@
       div.className = "sd-player winner";
       div.innerHTML = `<div class="sd-player-head"><span>${w ? w.name : "?"} 👑</span>` +
         `<span class="sd-score">+${sd.potWon}</span></div>` +
-        `<div class="sd-combo">Levou o Vórtice (adversários correram).</div>`;
+        `<div class="sd-combo">Recuperou as próprias vidas apostadas.</div>`;
       box.appendChild(div);
     }
 

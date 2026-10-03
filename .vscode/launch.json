@@ -38,7 +38,7 @@
       // dentro dele e, ao clicar em STOP, derruba o container automaticamente.
       //
       // Fluxo:
-      //   preLaunchTask  -> "erosion: compose up (debug)"  (docker compose up -d)
+      //   preLaunchTask  -> "erosion: compose up (debug)"  (acompanha os logs)
       //   attach         -> conecta na porta 9229 do container
       //   postDebugTask  -> "erosion: compose down"        (executa no STOP)
       "name": "Erosion: Docker Compose (stop derruba o container)",
